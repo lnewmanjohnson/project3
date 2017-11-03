@@ -43,9 +43,26 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.iterations = iterations
         self.values = util.Counter() # A Counter is a dict with default 0
 
-        # Write value iteration code here
-        "*** YOUR CODE HERE ***"
 
+
+        "*** YOUR CODE HERE ***"
+        iterationCount = 0
+        while iterationCount <= iterations:
+          valuesCopy = self.values.copy()
+          delta = 0
+          for s in mdp.getStates():
+            if self.mdp.isTerminal(s):
+              self.values[s] = self.mdp.getReward(s, None, None)
+            else:            
+              possibleActions = self.mdp.getPossibleActions(s)
+              actionEVs = []
+              for a in possibleActions:
+                resultValue = 0
+                for r in self.mdp.getTransitionStatesAndProbs(s,a):
+                  resultValue += valuesCopy[r[0]]*r[1]
+                actionEVs.append(resultValue)
+              self.values[s] = self.mdp.getReward(s, None, None) + discount*(max(actionEVs))
+          iterationCount += 1
 
     def getValue(self, state):
         """
@@ -60,7 +77,16 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #print("TAKING A PEEK AT VALUES")
+        #print("value of state is: ", self.values[state])
+        if (self.mdp.isTerminal(state)):
+          return None
+        else:
+          actionValue = 0
+          for (nextState, p) in self.mdp.getTransitionStatesAndProbs(state, action):
+            #print("value of nextState is: ", self.values[nextState])
+            actionValue += self.values[nextState]*p
+          return actionValue
 
     def computeActionFromValues(self, state):
         """
@@ -72,7 +98,18 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if (self.mdp.isTerminal(state)):
+          return None
+        else:
+          bestAction = [None, -99999]
+          for a in self.mdp.getPossibleActions(state):
+            currAction = [None, 0]
+            for (nextState, p) in self.mdp.getTransitionStatesAndProbs(state, a):
+              currAction[1] += self.values[nextState]*p
+            if currAction[1] > bestAction[1]:
+              bestAction[0] = a
+              bestAction[1] = currAction[1]
+          return bestAction[0]
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
