@@ -28,14 +28,11 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.discount = discount
         self.iterations = iterations
         self.values = util.Counter() # A Counter is a dict with default 0
-
-        # Write value iteration code here
         "*** YOUR CODE HERE ***"
         
         
         iterationCount = 1
         while iterationCount <= iterations:
-          #print("new iteration")
           valuesCopy = self.values.copy()
           for state in mdp.getStates():
             if (mdp.isTerminal(state)):
@@ -46,7 +43,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                 actionEV = 0
                 for (result, p) in self.mdp.getTransitionStatesAndProbs(state, action):
                   actionEV += p*(self.mdp.getReward(state, action, result) + discount*valuesCopy[result])
-                if (actionEV > bestAction[1]):
+                if (actionEV >= bestAction[1]):
                   bestAction[0] = action
                   bestAction[1] = actionEV
                 self.values[state] = bestAction[1]
@@ -90,7 +87,7 @@ class ValueIterationAgent(ValueEstimationAgent):
             for (nextState, p) in self.mdp.getTransitionStatesAndProbs(state, action):
               currAction = [None, 0]
               currAction[1] += self.computeQValueFromValues(state, action)
-              if (currAction[1] > bestAction[1]):
+              if (currAction[1] >= bestAction[1]):
                 bestAction[0] = action
                 bestAction[1] = currAction[1]
           return bestAction[0]
