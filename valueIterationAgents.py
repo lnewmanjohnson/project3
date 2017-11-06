@@ -45,8 +45,8 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         
         
-        iterationCount = 1
-        while iterationCount <= iterations:
+        iterationCount = 0
+        while iterationCount < iterations:
           valuesCopy = self.values.copy()
           for state in mdp.getStates():
             if (mdp.isTerminal(state)):
