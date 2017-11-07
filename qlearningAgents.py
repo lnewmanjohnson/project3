@@ -122,8 +122,10 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
+        #if state != None:
+        #    self.qValues[(state, action)] += self.alpha*(reward + self.discount*self.computeValueFromQValues(nextState) - self.getQValue(state, action))
         if state != None:
-            self.qValues[(state, action)] += self.alpha*(reward + self.discount*self.computeValueFromQValues(nextState) - self.getQValue(state, action))
+            self.qValues[(state, action)] = self.getQValue(state, action) + self.alpha*(reward + self.discount*self.computeValueFromQValues(nextState) - self.getQValue(state, action))
 
         
 
@@ -189,20 +191,22 @@ class ApproximateQAgent(PacmanQAgent):
         """
         "*** YOUR CODE HERE ***"
         qValue = 0.0
+        weights = self.getWeights()
         features = self.featExtractor.getFeatures(state, action)
         for feature in features:
-            qValue += self.getWeights()[feature]*features[feature]
+            qValue += (weights[feature]*features[feature])
         return qValue
-        util.raiseNotDefined()
 
     def update(self, state, action, nextState, reward):
         """
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-        weights = self.getWeights
-        for weight in weights:
-            weight += self.alpha*(reward + self.discount)
+        features = self.featExtractor.getFeatures(state, action)
+        weights = self.getWeights()
+        difference = reward + self.discount*(self.computeValueFromQValues(nextState)) - self.getQValue(state, action)
+        for feature in features:
+            weights[feature] += self.alpha * difference * features[feature]
 
 
     def final(self, state):
